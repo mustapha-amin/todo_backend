@@ -1,0 +1,24 @@
+{
+  "name": "todo_backend",
+  "version": "1.0.0",
+  "description": "Todo app backend",
+  "license": "ISC",
+  "author": "Mustapha Amin",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "dev" : "nodemon",
+    "build" : "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "mongoose": "^8.19.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}
