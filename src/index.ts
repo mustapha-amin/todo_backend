@@ -1,10 +1,10 @@
 import express from "express";
-
+import { connectDB } from "./config/db.ts";
 const app = express()
 const port = 3001;
-const MONGODB_URL = "mongodb+srv://mustaphaadinoyi75_db_user:<db_password>@cluster0.wbuuww8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
 app.use(express.json())
+await connectDB()
 //app.use('/api', router)
 
 // app.use('*', (_ : express.Request, res: express.Response) => {
