@@ -8,8 +8,8 @@ const port = 3001;
 app.use(express.json())
 await connectDB()
 
-app.use('/api', router)
 app.use(logger)
+app.use('/api', router)
 
 // app.use('(.*)', (req : Request, res: Response) => {
 //     res.status(404).json({"message" : "invalid route"})
