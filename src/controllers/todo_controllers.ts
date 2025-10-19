@@ -16,8 +16,6 @@ export async function createTodo(req: Request, res: Response) {
             description,
         })
 
-        await newTodo.save()
-
         res.status(201).send({
             "message": "todo created succesfully"
         })
