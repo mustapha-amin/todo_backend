@@ -8,6 +8,7 @@ export function errorHandler(
     err: ApiError | Error | mongoose.Error | unknown,
     req: Request,
     res: Response,
+    next: NextFunction,
 ) {
     let errorMessage: string
     let statusCode: number;
