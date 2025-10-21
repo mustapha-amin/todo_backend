@@ -3,6 +3,7 @@ import { Todo } from "../models/todo.ts";
 import BadRequestError from "../error/bad_request_error.ts";
 import NotFoundError from "../error/not_found_error.ts";
 import { asyncHandler } from "../middleware/async_handler.ts";
+import { StatusCodes } from "http-status-codes";
 
 export const createTodo = asyncHandler(async function(req: Request, res: Response) {
     const { title, description } = req.body
@@ -60,7 +61,18 @@ export const deleteTodo = asyncHandler(async function(req: Request, res: Respons
         throw new NotFoundError("Todo not found");
     }
 
-    res.status(204).send({
+    res.status(StatusCodes.ACCEPTED).send({
         message: "Todo deleted successfully"
     })
 });
+
+export const deleteAllTodos = asyncHandler(async function(req:Request, res:Response) {
+  const result = await Todo.deleteMany({})
+  if (result.deletedCount === 0) {
+      throw new NotFoundError("No todos found");
+  }
+
+  res.status(StatusCodes.ACCEPTED).send({
+    message:"Todos deleted successfully"
+  })
+})
