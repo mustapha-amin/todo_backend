@@ -8,13 +8,11 @@ A RESTful API backend for a Todo application built with Node.js, Express, TypeSc
 
 ## Features
 
+- ✅ JWT-based Authentication (login and register)
 - ✅ Create, read, update, and delete todos
 - ✅ MongoDB database integration with Mongoose
 - ✅ TypeScript for type safety
 - ✅ Express.js framework
-- ✅ UUID-based todo identification
-- ✅ Request logging middleware
-- ✅ Hot reload with Nodemon
 
 ## Tech Stack
 
@@ -54,12 +52,15 @@ PORT=3001
 ```
 todo_backend/
 ├── src/
-│   ├── config/          # Configuration files (database, etc.)
-│   ├── controllers/     # Request handlers
-│   ├── middleware/      # Custom middleware (logger, etc.)
-│   ├── models/          # Mongoose models
-│   ├── index.ts         # Application entry point
-│   └── routes.ts        # API route definitions
+│   ├── index.ts
+│   ├── config/
+│   ├── controllers/
+│   ├── error/
+│   ├── middleware/
+│   ├── models/
+│   ├── routes/
+│   ├── types/
+│   └── validators/
 ├── dist/                # Compiled JavaScript (generated)
 ├── .env                 # Environment variables
 ├── package.json         # Project dependencies
@@ -142,31 +143,4 @@ Compiles TypeScript to JavaScript in the `dist/` directory.
 ```bash
 npm start
 ```
-Runs the compiled JavaScript from the `dist/` directory.
-
-## Todo Model Schema
-
-```typescript
-{
-  id: String (UUID),
-  title: String (required),
-  description: String (optional),
-  completed: Boolean (default: false)
-}
-```
-
-## Development
-
-The application uses:
-- **TypeScript** with strict mode enabled
-- **ES Modules** (type: "module")
-- **Nodemon** for automatic server restart during development
-- **Custom logger middleware** for request logging
-
-## License
-
-ISC
-
-## Version
-
-1.0.0
+ 
