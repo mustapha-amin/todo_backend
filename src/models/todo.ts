@@ -6,6 +6,10 @@ const TodoSchema = new mongoose.Schema({
     type: String, 
     default: uuidv4, 
   },
+  userId:{
+    type:String,
+    required: true
+  },
   title: {
     type: String,
     required: true,

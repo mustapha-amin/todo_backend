@@ -5,6 +5,7 @@ import logger from "./middleware/logger.ts";
 import { notFoundHandler } from "./middleware/not_found.ts";
 import { errorHandler } from "./middleware/error_handler.ts";
 import todoRouter from "./routes/todo.routes.ts";
+import authRouter from "./routes/auth.routes.ts";
 
 const app = express()
 const port = 3001;
@@ -14,6 +15,7 @@ await connectDB()
 
 app.use(logger)
 app.use('/api', todoRouter)
+app.use('/api', authRouter)
 app.use(notFoundHandler)
 app.use(errorHandler)
 
