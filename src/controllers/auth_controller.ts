@@ -7,9 +7,10 @@ import { User } from "../models/user.ts";
 import jwt from "jsonwebtoken";
 import BadRequestError from "../error/bad_request_error.ts";
 import NotFoundError from "../error/not_found_error.ts";
+import { asyncHandler } from "../middleware/async_handler.ts";
 
 
-export async function register(req: Request, res: Response) {
+export const register = asyncHandler(async function (req: Request, res: Response) {
     const { email, password } = req.body;
     if (!email || !password) {
         throw new BadRequestError("Please provide email and password")
@@ -28,46 +29,46 @@ export async function register(req: Request, res: Response) {
     }
 
     const user = await User.create({ email, password })
-    const token = jwt.sign({ userId : user.userId }, JWT_KEY!, { expiresIn: "7d" })
+    const token = jwt.sign({ userId: user.userId }, JWT_KEY!, { expiresIn: "7d" })
 
     res.cookie("token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite:"strict"
+        sameSite: "strict"
     });
 
     return res.status(201).send({
         "message": "User registered successfully",
         token
     })
-}
+})
 
-export async function login(req:Request, res:Response) {
-    const {email, password} = req.body
-    if(!email || !password) {
+export const login = asyncHandler(async function (req: Request, res: Response) {
+    const { email, password } = req.body
+    if (!email || !password) {
         throw new BadRequestError("Please provide email and password");
     }
 
-    const user = await User.findOne({email})
-    if(!user) {
+    const user = await User.findOne({ email })
+    if (!user) {
         throw new NotFoundError("The user does not exist")
     }
 
     const isMatch = await user.comparePassword(password)
-    if(!isMatch) {
+    if (!isMatch) {
         throw new BadRequestError("Incorrect password")
     }
 
-    const token = jwt.sign({userId : user.userId}, JWT_KEY!, {expiresIn:"7d"})
+    const token = jwt.sign({ userId: user.userId }, JWT_KEY!, { expiresIn: "7d" })
 
-     res.cookie("token", token, {
+    res.cookie("token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite:"strict"
+        sameSite: "strict"
     });
 
     return res.status(200).send({
         "message": "User logged in successfully",
         token
     })
-}
+})
