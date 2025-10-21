@@ -7,20 +7,22 @@ import { StatusCodes } from "http-status-codes";
 
 export const createTodo = asyncHandler(async function(req: Request, res: Response) {
     const { title, description } = req.body
-    if (!title || !description) {
+    if (!title || !description ) {
         throw new BadRequestError("Missing parameter");
     }
-    await Todo.create({ title, description, })
+    const userId = req.user.userId
+    await Todo.create({ title, description, userId})
 
     res.status(201).send({
-        "message": "todo created succesfully"
+        "message": "todo created successfully"
     })
 
     console.log("todo created");
 });
 
-export const fetchTodos = asyncHandler(async function(_: Request, res: Response) {
-    const todos = await Todo.find({}, "id title completed description");
+export const fetchTodos = asyncHandler(async function(req: Request, res: Response) {
+    const userId = req.user.userId;
+    const todos = await Todo.find({userId}, "id title completed description");
     res.status(200).send({
         "message": "Todos fetched successfully",
         "data": todos
@@ -29,7 +31,8 @@ export const fetchTodos = asyncHandler(async function(_: Request, res: Response)
 
 export const fetchTodoByID = asyncHandler(async function(req: Request, res: Response) {
     const { id } = req.params
-    const todo = await Todo.findOne({ id }, "id title completed description")
+    const userId = req.user.userId;
+    const todo = await Todo.findOne({ id, userId }, "id title completed description")
     if (!todo) {
         throw new NotFoundError("Todo not found")
     }
@@ -38,7 +41,8 @@ export const fetchTodoByID = asyncHandler(async function(req: Request, res: Resp
 
 export const updateTodo = asyncHandler(async function(req: Request, res: Response) {
     const { id } = req.params;
-    const updatedTodo = await Todo.findOneAndUpdate({ id }, req.body, {
+    const userId = req.user.userId;
+    const updatedTodo = await Todo.findOneAndUpdate({ id, userId }, req.body, {
         new: true,
         runValidators: true,
     })
@@ -55,7 +59,8 @@ export const updateTodo = asyncHandler(async function(req: Request, res: Respons
 
 export const deleteTodo = asyncHandler(async function(req: Request, res: Response) {
     const { id } = req.params;
-    const result = await Todo.deleteOne({ id })
+    const userId = req.user.userId;
+    const result = await Todo.deleteOne({ id, userId })
 
     if (result.deletedCount === 0) {
         throw new NotFoundError("Todo not found");
@@ -72,7 +77,7 @@ export const deleteAllTodos = asyncHandler(async function(req:Request, res:Respo
       throw new NotFoundError("No todos found");
   }
 
-  res.status(StatusCodes.ACCEPTED).send({
+  res.status(StatusCodes.OK).send({
     message:"Todos deleted successfully"
   })
 })

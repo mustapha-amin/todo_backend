@@ -28,7 +28,7 @@ export async function register(req: Request, res: Response) {
     }
 
     const user = await User.create({ email, password })
-    const token = jwt.sign({ id: user.userId }, JWT_KEY!, { expiresIn: "7d" })
+    const token = jwt.sign({ userId : user.userId }, JWT_KEY!, { expiresIn: "7d" })
 
     res.cookie("token", token, {
         httpOnly: true,
@@ -58,7 +58,7 @@ export async function login(req:Request, res:Response) {
         throw new BadRequestError("Incorrect password")
     }
 
-    const token = jwt.sign({id:user.userId}, JWT_KEY!, {expiresIn:"7d"})
+    const token = jwt.sign({userId : user.userId}, JWT_KEY!, {expiresIn:"7d"})
 
      res.cookie("token", token, {
         httpOnly: true,
