@@ -8,29 +8,35 @@ import jwt from "jsonwebtoken";
 import BadRequestError from "../error/bad_request_error.ts";
 
 
-export async function register(req:Request, res:Response) {
-    const {email, password} = req.body;
-    if(!email || !password)  {
+export async function register(req: Request, res: Response) {
+    const { email, password } = req.body;
+    if (!email || !password) {
         throw new UnauthenticatedError("Please provide email and password")
     }
 
     const parsedInput = registerSchema.safeParse(req.body)
-    if(!parsedInput.success) {
+    if (!parsedInput.success) {
         return res.status(StatusCodes.BAD_REQUEST).send({
-            "message" : "Invalid input. Please check your credentials."
+            "message": "Invalid input. Please check your credentials."
         })
     }
 
-    const existingUser = await User.findOne({email})
-    if(existingUser) {
+    const existingUser = await User.findOne({ email })
+    if (existingUser) {
         throw new BadRequestError("User already exists");
     }
 
-    const user = await User.create({email, password})
-    const token = jwt.sign({id: user.userId}, JWT_KEY!, {expiresIn:"7d"})
+    const user = await User.create({ email, password })
+    const token = jwt.sign({ id: user.userId }, JWT_KEY!, { expiresIn: "7d" })
+
+    res.cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite:"strict"
+    });
 
     return res.status(201).send({
-        "message" : "User registed successfully",
+        "message": "User registed successfully",
         token
     })
 }
