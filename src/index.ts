@@ -7,6 +7,7 @@ import { errorHandler } from "./middleware/error_handler.ts";
 import todoRouter from "./routes/todo.routes.ts";
 import authRouter from "./routes/auth.routes.ts";
 import { authMiddleware } from "./middleware/auth_middleware.ts";
+import usersRouter from "./routes/user.routes.ts";
 
 const app = express()
 const port = 3001;
@@ -18,6 +19,7 @@ app.use(logger)
 
 app.use('/api/v1/auth/', authRouter)
 app.use('/api/v1/todos/', authMiddleware, todoRouter)
+app.use('/api/v1/users/', authMiddleware, usersRouter)
 
 app.use(notFoundHandler)
 app.use(errorHandler)
