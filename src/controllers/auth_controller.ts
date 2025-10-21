@@ -6,12 +6,13 @@ import { StatusCodes } from "http-status-codes";
 import { User } from "../models/user.ts";
 import jwt from "jsonwebtoken";
 import BadRequestError from "../error/bad_request_error.ts";
+import NotFoundError from "../error/not_found_error.ts";
 
 
 export async function register(req: Request, res: Response) {
     const { email, password } = req.body;
     if (!email || !password) {
-        throw new UnauthenticatedError("Please provide email and password")
+        throw new BadRequestError("Please provide email and password")
     }
 
     const parsedInput = registerSchema.safeParse(req.body)
@@ -36,7 +37,37 @@ export async function register(req: Request, res: Response) {
     });
 
     return res.status(201).send({
-        "message": "User registed successfully",
+        "message": "User registered successfully",
+        token
+    })
+}
+
+export async function login(req:Request, res:Response) {
+    const {email, password} = req.body
+    if(!email || !password) {
+        throw new BadRequestError("Please provide email and password");
+    }
+
+    const user = await User.findOne({email})
+    if(!user) {
+        throw new NotFoundError("The user does not exist")
+    }
+
+    const isMatch = await user.comparePassword(password)
+    if(!isMatch) {
+        throw new BadRequestError("Incorrect password")
+    }
+
+    const token = jwt.sign({id:user.userId}, JWT_KEY!, {expiresIn:"7d"})
+
+     res.cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite:"strict"
+    });
+
+    return res.status(200).send({
+        "message": "User logged in successfully",
         token
     })
 }
