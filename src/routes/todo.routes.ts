@@ -3,11 +3,11 @@ import { createTodo, deleteAllTodos, deleteTodo, fetchTodoByID, fetchTodos, upda
 
 const todoRouter = Router()
 
-todoRouter.post('/todo', createTodo)
-todoRouter.get('/todo', fetchTodos)
-todoRouter.get('/todo/:id', fetchTodoByID)
-todoRouter.patch('/todo/:id', updateTodo)
-todoRouter.delete('/todo/:id', deleteTodo)
-todoRouter.delete('/admin/todos', deleteAllTodos)
+todoRouter.post('/', createTodo)
+todoRouter.get('/', fetchTodos)
+todoRouter.get('/:id', fetchTodoByID)
+todoRouter.patch('/:id', updateTodo)
+todoRouter.delete('/:id', deleteTodo)
+// todoRouter.delete('/admin/todos', deleteAllTodos)
 
 export default todoRouter

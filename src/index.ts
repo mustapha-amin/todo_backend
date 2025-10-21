@@ -17,7 +17,7 @@ await connectDB()
 app.use(logger)
 
 app.use('/api/v1/auth/', authRouter)
-app.use('/api/vi/', authMiddleware, todoRouter)
+app.use('/api/v1/todos/', authMiddleware, todoRouter)
 
 app.use(notFoundHandler)
 app.use(errorHandler)

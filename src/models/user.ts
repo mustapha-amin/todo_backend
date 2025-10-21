@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema<IUser>({
   },
   username: {
     type: String,
-    unique: true
+    default:'',
   },
   email: {
     type: String,
