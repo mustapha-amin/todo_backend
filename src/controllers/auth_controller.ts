@@ -1,10 +1,9 @@
-import { JWT_KEY } from "../config/env.ts";
+import { JWT_EXPIRES_IN, JWT_KEY } from "../config/env.ts";
 import { type Request, type Response } from "express";
-import UnauthenticatedError from "../error/unauthenticated_error.ts";
 import { registerSchema } from "../validators/auth_validator.ts";
 import { StatusCodes } from "http-status-codes";
 import { User } from "../models/user.ts";
-import jwt from "jsonwebtoken";
+import jwt, { type Secret, type SignOptions } from "jsonwebtoken";
 import BadRequestError from "../error/bad_request_error.ts";
 import NotFoundError from "../error/not_found_error.ts";
 import { asyncHandler } from "../middleware/async_handler.ts";
@@ -29,7 +28,10 @@ export const register = asyncHandler(async function (req: Request, res: Response
     }
 
     const user = await User.create({ email, password })
-    const token = jwt.sign({ userId: user.userId }, JWT_KEY!, { expiresIn: "7d" })
+    if (!JWT_KEY) throw new Error("JWT_KEY is not defined. Set JWT_KEY in your environment.");
+    const secret = JWT_KEY as Secret
+    const signOpts = { expiresIn: JWT_EXPIRES_IN ?? "7d" } as SignOptions
+    const token = jwt.sign({ userId: user.userId, role: user.role }, secret, signOpts)
 
     res.cookie("token", token, {
         httpOnly: true,
@@ -59,7 +61,10 @@ export const login = asyncHandler(async function (req: Request, res: Response) {
         throw new BadRequestError("Incorrect password")
     }
 
-    const token = jwt.sign({ userId: user.userId }, JWT_KEY!, { expiresIn: "7d" })
+    if (!JWT_KEY) throw new Error("JWT_KEY is not defined. Set JWT_KEY in your environment.");
+    const secret = JWT_KEY as Secret
+    const signOpts = { expiresIn: JWT_EXPIRES_IN ?? "7d" } as SignOptions
+    const token = jwt.sign({ userId: user.userId, role: user.role }, secret, signOpts)
 
     res.cookie("token", token, {
         httpOnly: true,
