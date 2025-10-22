@@ -4,14 +4,26 @@ import { User } from "../models/user.ts";
 import NotFoundError from "../error/not_found_error.ts";
 import { StatusCodes } from "http-status-codes";
 
-export const fetchUsers = asyncHandler(async function (req:Request, res: Response) {
+export const fetchUsers = asyncHandler(async function (req: Request, res: Response) {
     const users = await User.find().select('-password')
-    if(!users) {
+    if (!users) {
         throw new NotFoundError("No users found");
     }
 
     return res.status(StatusCodes.OK).send({
-        "message" : "users fetched successfully",
-        "data" : users
+        "message": "users fetched successfully",
+        "data": users
+    })
+})
+
+export const deleteAllUsers = asyncHandler(async function (req: Request, res: Response) {
+    const result = await User.deleteMany({})
+
+    if (result.deletedCount === 0) {
+        throw new NotFoundError("No users found");
+    }
+
+    res.status(StatusCodes.OK).send({
+        message: "Users deleted successfully"
     })
 })

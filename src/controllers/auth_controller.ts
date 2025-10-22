@@ -10,7 +10,7 @@ import { asyncHandler } from "../middleware/async_handler.ts";
 
 
 export const register = asyncHandler(async function (req: Request, res: Response) {
-    const { email, password } = req.body;
+    const { email, password, username } = req.body;
     if (!email || !password) {
         throw new BadRequestError("Please provide email and password")
     }
@@ -27,7 +27,43 @@ export const register = asyncHandler(async function (req: Request, res: Response
         throw new BadRequestError("User already exists");
     }
 
-    const user = await User.create({ email, password })
+    const user = await User.create({ email, password, username})
+    if (!JWT_KEY) throw new Error("JWT_KEY is not defined. Set JWT_KEY in your environment.");
+    const secret = JWT_KEY as Secret
+    const signOpts = { expiresIn: JWT_EXPIRES_IN ?? "7d" } as SignOptions
+    const token = jwt.sign({ userId: user.userId, role: user.role }, secret, signOpts)
+
+    res.cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict"
+    });
+
+    return res.status(201).send({
+        "message": "User registered successfully",
+        token
+    })
+})
+
+export const registerAsAdmin = asyncHandler(async function (req: Request, res: Response) {
+    const { email, password, username } = req.body;
+    if (!email || !password) {
+        throw new BadRequestError("Please provide email and password")
+    }
+
+    const parsedInput = registerSchema.safeParse(req.body)
+    if (!parsedInput.success) {
+        return res.status(StatusCodes.BAD_REQUEST).send({
+            "message": "Invalid input. Please check your credentials."
+        })
+    }
+
+    const existingUser = await User.findOne({ email })
+    if (existingUser) {
+        throw new BadRequestError("User already exists");
+    }
+
+    const user = await User.create({ email, password, username, role:"admin"})
     if (!JWT_KEY) throw new Error("JWT_KEY is not defined. Set JWT_KEY in your environment.");
     const secret = JWT_KEY as Secret
     const signOpts = { expiresIn: JWT_EXPIRES_IN ?? "7d" } as SignOptions

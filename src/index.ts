@@ -8,22 +8,25 @@ import todoRouter from "./routes/todo.routes.ts";
 import authRouter from "./routes/auth.routes.ts";
 import { authMiddleware } from "./middleware/auth_middleware.ts";
 import usersRouter from "./routes/user.routes.ts";
+import { authorize } from "./middleware/role_middleware.ts";
 
 const app = express()
 const port = 3001;
 
 app.use(express.json())
-await connectDB()
-
 app.use(logger)
 
-app.use('/api/v1/auth/', authRouter)
-app.use('/api/v1/todos/', authMiddleware, todoRouter)
-app.use('/api/v1/users/', authMiddleware, usersRouter)
+connectDB().then(() => {
+    app.use('/api/v1/auth/', authRouter)
+    app.use('/api/v1/todos/', authMiddleware, todoRouter)
+    app.use('/api/v1/users/', authMiddleware, authorize('admin'), usersRouter)
+    app.use(notFoundHandler)
+    app.use(errorHandler)
 
-app.use(notFoundHandler)
-app.use(errorHandler)
-
-app.listen(port, () => {
-    console.log(`⚡ express app running on port ${port}`)
+    app.listen(port, () => {
+        console.log(`⚡ express app running on port ${port}`)
+    })
+}).catch((err) => {
+    console.error(err)
+    process.exit(1)
 })

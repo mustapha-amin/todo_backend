@@ -10,6 +10,7 @@ interface IUser extends mongoose.Document {
   comparePassword(candidatePassword: string): Promise<boolean>;
   createdAt: Date;
   updatedAt: Date;
+  role: string;
 }
 
 const userSchema = new mongoose.Schema<IUser>({
@@ -19,7 +20,8 @@ const userSchema = new mongoose.Schema<IUser>({
   },
   username: {
     type: String,
-    default:'',
+    unique: true,
+    sparse:true
   },
   email: {
     type: String,
@@ -29,6 +31,11 @@ const userSchema = new mongoose.Schema<IUser>({
   password: {
     type: String,
     required: true,
+  },
+  role: {
+    type: String,
+    default: 'user',
+    enum: ['admin', 'user']
   }
 }, {
   timestamps: true
